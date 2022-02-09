@@ -37,6 +37,7 @@ static void replaceCallWithArg(const CallExpr *Call, DiagnosticBuilder &Diag,
 
 void MoveConstArgCheck::storeOptions(ClangTidyOptions::OptionMap &Opts) {
   Options.store(Opts, "CheckTriviallyCopyableMove", CheckTriviallyCopyableMove);
+  Options.store(Opts, "CheckMoveToConstRef", CheckMoveToConstRef);
 }
 
 void MoveConstArgCheck::registerMatchers(MatchFinder *Finder) {
@@ -194,7 +195,7 @@ void MoveConstArgCheck::check(const MatchFinder::MatchResult &Result) {
           << *InvocationParmType << ExpectParmTypeName;
     }
   } else if (ReceivingExpr) {
-    if ((*InvocationParmType)->isRValueReferenceType())
+    if ((*InvocationParmType)->isRValueReferenceType() || !CheckMoveToConstRef)
       return;
 
     auto Diag = diag(FileMoveRange.getBegin(),
