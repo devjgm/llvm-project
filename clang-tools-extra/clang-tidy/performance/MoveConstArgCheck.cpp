@@ -194,8 +194,8 @@ void MoveConstArgCheck::check(const MatchFinder::MatchResult &Result) {
           << (InvocationParm->getFunctionScopeIndex() + 1) << FunctionName
           << *InvocationParmType << ExpectParmTypeName;
     }
-  } else if (ReceivingExpr) {
-    if ((*InvocationParmType)->isRValueReferenceType() || !CheckMoveToConstRef)
+  } else if (ReceivingExpr && CheckMoveToConstRef) {
+    if ((*InvocationParmType)->isRValueReferenceType())
       return;
 
     auto Diag = diag(FileMoveRange.getBegin(),
